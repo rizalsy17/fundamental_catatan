@@ -1,30 +1,32 @@
 import React, { useState, useEffect } from 'react';
-import { Link,useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faHome, faCheck, faTrash,faSignOutAlt, faAdjust, faLanguage } from '@fortawesome/free-solid-svg-icons';
+import { faHome, faCheck, faTrash, faSignOutAlt, faAdjust, faLanguage } from '@fortawesome/free-solid-svg-icons';
 import Modal from '../components/Modal';
 import noNotesImage from '../../public/empty.png';
 import { useAuth } from '../context/AuthContext';
-import { unarchiveNote, deleteNote } from '../utils/network-data';
-import { useTheme } from '../context/ThemeContext'; 
+import { unarchiveNote, deleteNote, getArchivedNotes } from '../utils/network-data';
+import { useTheme } from '../context/ThemeContext';
 import { useLanguage } from '../context/LanguageContext';
 
-const Archive = ({ notes,setArchivedNotes  }) => {
+const Archive = () => {
   const { user, logoutUser } = useAuth();
-  const { toggleTheme, theme } = useTheme(); // Memperbarui untuk mengambil tema saat ini
-  const { toggleLanguage, language } = useLanguage(); // Memperbarui untuk mengambil bahasa saat ini
+  const { toggleTheme, theme } = useTheme();
+  const { toggleLanguage, language } = useLanguage();
   const [showModal, setShowModal] = useState(false);
   const [modalContent, setModalContent] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
-  const navigate = useNavigate()
+  const [archivedNotes, setArchivedNotes] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
     setSearchTerm('');
-  }, [notes]);
+    setIsLoading(false);
+  }, []);
 
   useEffect(() => {
     document.body.style.backgroundColor = theme === 'light' ? '#ffffff' : '#222222';
-   
   }, [theme]);
 
   const handleSearchChange = (e) => {
@@ -37,46 +39,69 @@ const Archive = ({ notes,setArchivedNotes  }) => {
       navigate('/login');
     }
   }, [user, navigate]);
-  
+
+  useEffect(() => {
+    const fetchArchivedNotes = async () => {
+      try {
+        setIsLoading(true);
+        const { error, data } = await getArchivedNotes();
+        if (!error) {
+          setArchivedNotes(data);
+        } else {
+          console.error('Failed to fetch archived notes');
+        }
+      } catch (error) {
+        console.error('Failed to fetch archived notes', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchArchivedNotes();
+  }, []);
+
   const handleUnarchive = async (noteId) => {
     try {
+      setIsLoading(true);
       const unarchiveNoteResponse = await unarchiveNote(noteId);
       if (!unarchiveNoteResponse.error) {
-        setArchivedNotes(prevNotes => prevNotes.filter(note => note.id !== noteId));
-        setAllNotes(prevNotes => [...prevNotes, unarchiveNoteResponse.data]);
+        setArchivedNotes((prevNotes) => prevNotes.filter((note) => note.id !== noteId));
+        setShowModal(false);
       } else {
         console.error('Failed to unarchive note');
       }
     } catch (error) {
       console.error('Failed to unarchive note', error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  
-  
-  
-
   const handleLogout = () => {
-    logoutUser(); 
+    logoutUser();
     navigate('/login');
   };
 
   const handleDeleteArchive = async (noteId) => {
     try {
+      setIsLoading(true);
       await deleteNote(noteId);
-      setArchivedNotes(prevNotes => prevNotes.filter(note => note.id !== noteId));
+      setArchivedNotes((prevNotes) => prevNotes.filter((note) => note.id !== noteId));
       setShowModal(false);
     } catch (error) {
       console.error('Failed to delete archived note', error);
+    } finally {
+      setIsLoading(false);
     }
   };
-  
-  const archivedFilter = notes.filter(
-    (note) => note.archived && note.title.toLowerCase().includes(searchTerm.toLowerCase())
+
+  const archivedFilter = archivedNotes.filter(
+    (note) => note.title.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
     <div className="container">
+      {isLoading && <div className="loading-indicator">Loading...</div>}
       <Link to="/" className="back-button-form">
         <FontAwesomeIcon icon={faHome} /> {language === 'id' ? 'Kembali' : 'Back'}
       </Link>
@@ -90,21 +115,27 @@ const Archive = ({ notes,setArchivedNotes  }) => {
         <div className="logout-icon" onClick={handleLogout}>
           <FontAwesomeIcon icon={faSignOutAlt} />
         </div>
-        </div>
+      </div>
       <header>
         <h1 style={{ textAlign: 'center' }}>{language === 'id' ? 'Data Arsip' : 'Archive Data'}</h1>
       </header>
       <section className="content">
-      <div className="search-container" style={{ backgroundColor: theme === 'light' ? '#ffffff' : '#222222' }}>
-            <input
-              type="text"
-              id="search"
-              value={searchTerm}
-              onChange={handleSearchChange}
-              placeholder={`${language === 'id' ? 'Cari Catatan' : 'Search Note'}`}
-              style={{ backgroundColor: theme === 'light' ? '#ffffff' : '#222222', color: theme === 'light' ? '#000000' : '#ffffff' }}
-            />
-          </div>
+        <div
+          className="search-container"
+          style={{ backgroundColor: theme === 'light' ? '#ffffff' : '#222222' }}
+        >
+          <input
+            type="text"
+            id="search"
+            value={searchTerm}
+            onChange={handleSearchChange}
+            placeholder={`${language === 'id' ? 'Cari Catatan' : 'Search Note'}`}
+            style={{
+              backgroundColor: theme === 'light' ? '#ffffff' : '#222222',
+              color: theme === 'light' ? '#000000' : '#ffffff',
+            }}
+          />
+        </div>
 
         <div className="container">
           {archivedFilter.length === 0 ? (
@@ -112,7 +143,11 @@ const Archive = ({ notes,setArchivedNotes  }) => {
           ) : (
             <div className="note-cards">
               {archivedFilter.map((note) => (
-               <div className="note-card" key={note.id} style={{ backgroundColor: theme === 'light' ? '#ffffff' : '#222222' }}>
+                <div
+                  className="note-card"
+                  key={note.id}
+                  style={{ backgroundColor: theme === 'light' ? '#ffffff' : '#222222' }}
+                >
                   <Link to={`/note/${note.id}`}>
                     <h3>{note.title}</h3>
                   </Link>
@@ -155,7 +190,7 @@ const Archive = ({ notes,setArchivedNotes  }) => {
             content={modalContent}
             onClose={() => setShowModal(false)}
             onDeleteNote={handleDeleteArchive}
-            onUnarchive={handleUnarchive} 
+            onUnarchive={handleUnarchive}
           />
         )}
       </section>

@@ -26,12 +26,14 @@ const App = () => {
   const [archivedNotes, setArchivedNotes] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [modalContent, setModalContent] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     fetchNotes();
   }, []);
 
   const fetchNotes = async () => {
+    setIsLoading(true);
     try {
       const activeNotesResponse = await getActiveNotes();
       const archivedNotesResponse = await getArchivedNotes();
@@ -39,12 +41,12 @@ const App = () => {
         setAllNotes(activeNotesResponse.data);
         setArchivedNotes(archivedNotesResponse.data);
       } else {
-        // Handle error
         console.error('Failed to fetch notes');
       }
     } catch (error) {
-      // Handle error
       console.error('Failed to fetch notes', error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -107,6 +109,7 @@ const App = () => {
 
   return (
     <div>
+        {isLoading && <div className="loading-indicator">Loading...</div>}
       <AuthProvider>
         <LanguageProvider>
           <ThemeProvider>
