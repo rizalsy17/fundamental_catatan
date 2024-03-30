@@ -1,15 +1,12 @@
-import React from 'react';
-
-// import PropTypes from 'prop-types';
+import React from "react";
 
 const Modal = ({ content, onDeleteNote, onClose, onArchive, onUnarchive }) => {
-
   const handleConfirm = () => {
-    if (content.type === 'delete') {
+    if (content.type === "delete") {
       onDeleteNote && onDeleteNote(content.noteId);
-    } else if (content.type === 'confirm') {
+    } else if (content.type === "confirm") {
       onArchive && onArchive(content.noteId);
-    } else if (content.type === 'activate') {
+    } else if (content.type === "activate") {
       onUnarchive && onUnarchive(content.noteId);
     }
     onClose();
@@ -22,7 +19,7 @@ const Modal = ({ content, onDeleteNote, onClose, onArchive, onUnarchive }) => {
           X
         </button>
         <div className="modal-content">
-          {content.type === 'delete' && (
+          {content.type === "delete" && (
             <>
               <h2>Konfirmasi Hapus</h2>
               <p>Anda yakin ingin menghapus catatan ini?</p>
@@ -32,7 +29,7 @@ const Modal = ({ content, onDeleteNote, onClose, onArchive, onUnarchive }) => {
             </>
           )}
 
-          {content.type === 'confirm' && (
+          {content.type === "confirm" && (
             <>
               <h2>Konfirmasi Arsip</h2>
               <p>{content.message}</p>
@@ -42,7 +39,7 @@ const Modal = ({ content, onDeleteNote, onClose, onArchive, onUnarchive }) => {
             </>
           )}
 
-          {content.type === 'activate' && (
+          {content.type === "activate" && (
             <>
               <h2>Konfirmasi Aktivasi</h2>
               <p>{content.message}</p>
@@ -52,18 +49,30 @@ const Modal = ({ content, onDeleteNote, onClose, onArchive, onUnarchive }) => {
             </>
           )}
 
-          {content.type === 'detail' && (
+          {content.type === "detail" && (
             <>
               <h2>Detail Catatan</h2>
               <div className="detail-info">
-                <p><strong>ID:</strong> {content.noteId}</p>
-                <p><strong>Judul:</strong> {content.noteTitle}</p>
+                <p>
+                  <strong>ID:</strong> {content.noteId}
+                </p>
+                <p>
+                  <strong>Judul:</strong> {content.noteTitle}
+                </p>
                 <div className="note-content">
-                  <p><strong>Isi Catatan:</strong></p>
+                  <p>
+                    <strong>Isi Catatan:</strong>
+                  </p>
                   <pre>{content.noteContent}</pre>
                 </div>
-                <p><strong>Arsip:</strong> {content.archived ? 'Aktif' : 'Nonaktif'}</p>
-                <p><strong>Dibuat Pada:</strong> {new Date(content.createdAt).toLocaleString()}</p>
+                <p>
+                  <strong>Arsip:</strong>{" "}
+                  {content.archived ? "Aktif" : "Nonaktif"}
+                </p>
+                <p>
+                  <strong>Dibuat Pada:</strong>{" "}
+                  {new Date(content.createdAt).toLocaleString()}
+                </p>
               </div>
             </>
           )}
@@ -76,7 +85,7 @@ const Modal = ({ content, onDeleteNote, onClose, onArchive, onUnarchive }) => {
 //   content: PropTypes.shape({
 //     type: PropTypes.oneOf(['delete', 'confirm', 'activate', 'detail']).isRequired,
 //     message: PropTypes.string,
-//     noteId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]), 
+//     noteId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
 //     noteTitle: PropTypes.string,
 //     noteContent: PropTypes.string,
 //     archived: PropTypes.bool,

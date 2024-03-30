@@ -1,6 +1,6 @@
-import React, { createContext, useState, useContext } from 'react';
-import PropTypes from 'prop-types';
-import { login } from '../utils/network-data';
+import React, { createContext, useState, useContext } from "react";
+import PropTypes from "prop-types";
+import { login } from "../utils/network-data";
 
 const AuthContext = createContext();
 
@@ -13,14 +13,14 @@ export const AuthProvider = ({ children }) => {
     const { error, data } = await login({ email, password });
     if (!error) {
       setUser(data);
-      localStorage.setItem('accessToken', data.accessToken);
+      localStorage.setItem("accessToken", data.accessToken);
     }
     return { error, data };
   };
 
   const logoutUser = () => {
     setUser(null);
-    localStorage.removeItem('accessToken');
+    localStorage.removeItem("accessToken");
   };
 
   return (

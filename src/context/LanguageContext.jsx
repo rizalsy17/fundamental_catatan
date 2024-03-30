@@ -1,22 +1,21 @@
 // context/LanguageContext.js
-import React, { createContext, useState, useEffect, useContext } from 'react';
+import React, { createContext, useState, useEffect, useContext } from "react";
 
 const LanguageContext = createContext();
-
 export const useLanguage = () => useContext(LanguageContext);
 
 export const LanguageProvider = ({ children }) => {
   const [language, setLanguage] = useState(() => {
-    const storedLanguage = localStorage.getItem('language');
-    return storedLanguage ? storedLanguage : 'id'; // Default language is Indonesian
+    const storedLanguage = localStorage.getItem("language");
+    return storedLanguage ? storedLanguage : "id";
   });
 
   useEffect(() => {
-    localStorage.setItem('language', language);
+    localStorage.setItem("language", language);
   }, [language]);
 
   const toggleLanguage = () => {
-    setLanguage(prevLanguage => (prevLanguage === 'id' ? 'en' : 'id'));
+    setLanguage((prevLanguage) => (prevLanguage === "id" ? "en" : "id"));
   };
 
   return (

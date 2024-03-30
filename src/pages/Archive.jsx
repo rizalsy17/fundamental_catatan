@@ -1,13 +1,25 @@
-import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faHome, faCheck, faTrash, faSignOutAlt, faAdjust, faLanguage } from '@fortawesome/free-solid-svg-icons';
-import Modal from '../components/Modal';
-import noNotesImage from '../../public/empty.png';
-import { useAuth } from '../context/AuthContext';
-import { unarchiveNote, deleteNote, getArchivedNotes } from '../utils/network-data';
-import { useTheme } from '../context/ThemeContext';
-import { useLanguage } from '../context/LanguageContext';
+import React, { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faHome,
+  faCheck,
+  faTrash,
+  faSignOutAlt,
+  faAdjust,
+  faLanguage,
+} from "@fortawesome/free-solid-svg-icons";
+import Modal from "../components/Modal";
+import noNotesImage from "../../public/empty.png";
+import { useAuth } from "../context/AuthContext";
+import {
+  unarchiveNote,
+  deleteNote,
+  getArchivedNotes,
+} from "../utils/network-data";
+import { useTheme } from "../context/ThemeContext";
+import { useLanguage } from "../context/LanguageContext";
+import PropTypes from "prop-types";
 
 const Archive = () => {
   const { user, logoutUser } = useAuth();
@@ -15,18 +27,19 @@ const Archive = () => {
   const { toggleLanguage, language } = useLanguage();
   const [showModal, setShowModal] = useState(false);
   const [modalContent, setModalContent] = useState(null);
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState("");
   const [archivedNotes, setArchivedNotes] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
-    setSearchTerm('');
+    setSearchTerm("");
     setIsLoading(false);
   }, []);
 
   useEffect(() => {
-    document.body.style.backgroundColor = theme === 'light' ? '#ffffff' : '#222222';
+    document.body.style.backgroundColor =
+      theme === "light" ? "#ffffff" : "#222222";
   }, [theme]);
 
   const handleSearchChange = (e) => {
@@ -34,9 +47,9 @@ const Archive = () => {
   };
 
   useEffect(() => {
-    const accessToken = localStorage.getItem('accessToken');
+    const accessToken = localStorage.getItem("accessToken");
     if (!user && !accessToken) {
-      navigate('/login');
+      navigate("/login");
     }
   }, [user, navigate]);
 
@@ -48,10 +61,10 @@ const Archive = () => {
         if (!error) {
           setArchivedNotes(data);
         } else {
-          console.error('Failed to fetch archived notes');
+          console.error("Failed to fetch archived notes");
         }
       } catch (error) {
-        console.error('Failed to fetch archived notes', error);
+        console.error("Failed to fetch archived notes", error);
       } finally {
         setIsLoading(false);
       }
@@ -65,13 +78,15 @@ const Archive = () => {
       setIsLoading(true);
       const unarchiveNoteResponse = await unarchiveNote(noteId);
       if (!unarchiveNoteResponse.error) {
-        setArchivedNotes((prevNotes) => prevNotes.filter((note) => note.id !== noteId));
+        setArchivedNotes((prevNotes) =>
+          prevNotes.filter((note) => note.id !== noteId)
+        );
         setShowModal(false);
       } else {
-        console.error('Failed to unarchive note');
+        console.error("Failed to unarchive note");
       }
     } catch (error) {
-      console.error('Failed to unarchive note', error);
+      console.error("Failed to unarchive note", error);
     } finally {
       setIsLoading(false);
     }
@@ -79,31 +94,34 @@ const Archive = () => {
 
   const handleLogout = () => {
     logoutUser();
-    navigate('/login');
+    navigate("/login");
   };
 
   const handleDeleteArchive = async (noteId) => {
     try {
       setIsLoading(true);
       await deleteNote(noteId);
-      setArchivedNotes((prevNotes) => prevNotes.filter((note) => note.id !== noteId));
+      setArchivedNotes((prevNotes) =>
+        prevNotes.filter((note) => note.id !== noteId)
+      );
       setShowModal(false);
     } catch (error) {
-      console.error('Failed to delete archived note', error);
+      console.error("Failed to delete archived note", error);
     } finally {
       setIsLoading(false);
     }
   };
 
-  const archivedFilter = archivedNotes.filter(
-    (note) => note.title.toLowerCase().includes(searchTerm.toLowerCase())
+  const archivedFilter = archivedNotes.filter((note) =>
+    note.title.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
     <div className="container">
       {isLoading && <div className="loading-indicator">Loading...</div>}
       <Link to="/" className="back-button-form">
-        <FontAwesomeIcon icon={faHome} /> {language === 'id' ? 'Kembali' : 'Back'}
+        <FontAwesomeIcon icon={faHome} />{" "}
+        {language === "id" ? "Kembali" : "Back"}
       </Link>
       <div className="icon-row">
         <div className="theme-icon" onClick={toggleTheme}>
@@ -117,22 +135,26 @@ const Archive = () => {
         </div>
       </div>
       <header>
-        <h1 style={{ textAlign: 'center' }}>{language === 'id' ? 'Data Arsip' : 'Archive Data'}</h1>
+        <h1 style={{ textAlign: "center" }}>
+          {language === "id" ? "Data Arsip" : "Archive Data"}
+        </h1>
       </header>
       <section className="content">
         <div
           className="search-container"
-          style={{ backgroundColor: theme === 'light' ? '#ffffff' : '#222222' }}
+          style={{ backgroundColor: theme === "light" ? "#ffffff" : "#222222" }}
         >
           <input
             type="text"
             id="search"
             value={searchTerm}
             onChange={handleSearchChange}
-            placeholder={`${language === 'id' ? 'Cari Catatan' : 'Search Note'}`}
+            placeholder={`${
+              language === "id" ? "Cari Catatan" : "Search Note"
+            }`}
             style={{
-              backgroundColor: theme === 'light' ? '#ffffff' : '#222222',
-              color: theme === 'light' ? '#000000' : '#ffffff',
+              backgroundColor: theme === "light" ? "#ffffff" : "#222222",
+              color: theme === "light" ? "#000000" : "#ffffff",
             }}
           />
         </div>
@@ -146,7 +168,9 @@ const Archive = () => {
                 <div
                   className="note-card"
                   key={note.id}
-                  style={{ backgroundColor: theme === 'light' ? '#ffffff' : '#222222' }}
+                  style={{
+                    backgroundColor: theme === "light" ? "#ffffff" : "#222222",
+                  }}
                 >
                   <Link to={`/note/${note.id}`}>
                     <h3>{note.title}</h3>
@@ -158,9 +182,9 @@ const Archive = () => {
                       className="archive-button"
                       onClick={() => {
                         setModalContent({
-                          type: 'activate',
+                          type: "activate",
                           noteId: note.id,
-                          message: 'Anda yakin ingin mengaktifkan catatan ini?',
+                          message: "Anda yakin ingin mengaktifkan catatan ini?",
                         });
                         setShowModal(true);
                       }}
@@ -171,7 +195,7 @@ const Archive = () => {
                       className="delete-button"
                       onClick={() => {
                         setModalContent({
-                          type: 'delete',
+                          type: "delete",
                           noteId: note.id,
                         });
                         setShowModal(true);
@@ -196,6 +220,10 @@ const Archive = () => {
       </section>
     </div>
   );
+};
+
+Archive.propTypes = {
+  setArchivedNotes: PropTypes.func.isRequired,
 };
 
 export default Archive;

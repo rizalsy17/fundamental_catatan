@@ -1,16 +1,21 @@
-import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import NoteDetail from './components/NoteDetail';
-import AddNoteForm from './components/AddNoteForm';
-import { AuthProvider, useAuth } from './context/AuthContext';
-import Archive from './pages/Archive';
-import NotFound from './pages/NotFound';
-import Register from './pages/Register';
-import { LanguageProvider } from './context/LanguageContext';
-import { ThemeProvider } from './context/ThemeContext';
-import Login from './pages/Login';
-import Home from './pages/Home';
-import Modal from './components/Modal';
+import React, { useState, useEffect } from "react";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
+import NoteDetail from "./components/NoteDetail";
+import AddNoteForm from "./components/AddNoteForm";
+import { AuthProvider, useAuth } from "./context/AuthContext";
+import Archive from "./pages/Archive";
+import NotFound from "./pages/NotFound";
+import Register from "./pages/Register";
+import { LanguageProvider } from "./context/LanguageContext";
+import { ThemeProvider } from "./context/ThemeContext";
+import Login from "./pages/Login";
+import Home from "./pages/Home";
+import Modal from "./components/Modal";
 import {
   addNote,
   archiveNote,
@@ -18,9 +23,8 @@ import {
   deleteNote,
   getActiveNotes,
   getArchivedNotes,
-} from './utils/network-data';
+} from "./utils/network-data";
 const App = () => {
-  
   const { user, login } = useAuth();
   const [allNotes, setAllNotes] = useState([]);
   const [archivedNotes, setArchivedNotes] = useState([]);
@@ -41,10 +45,10 @@ const App = () => {
         setAllNotes(activeNotesResponse.data);
         setArchivedNotes(archivedNotesResponse.data);
       } else {
-        console.error('Failed to fetch notes');
+        console.error("Failed to fetch notes");
       }
     } catch (error) {
-      console.error('Failed to fetch notes', error);
+      console.error("Failed to fetch notes", error);
     } finally {
       setIsLoading(false);
     }
@@ -54,14 +58,12 @@ const App = () => {
     try {
       const addNoteResponse = await addNote(newNote);
       if (!addNoteResponse.error) {
-        fetchNotes(); // Re-fetch notes after adding a new note
+        fetchNotes();
       } else {
-        // Handle error
-        console.error('Failed to add note');
+        console.error("Failed to add note");
       }
     } catch (error) {
-      // Handle error
-      console.error('Failed to add note', error);
+      console.error("Failed to add note", error);
     }
   };
 
@@ -69,14 +71,12 @@ const App = () => {
     try {
       const deleteNoteResponse = await deleteNote(noteId);
       if (!deleteNoteResponse.error) {
-        fetchNotes(); // Re-fetch notes after deleting a note
+        fetchNotes();
       } else {
-        // Handle error
-        console.error('Failed to delete note');
+        console.error("Failed to delete note");
       }
     } catch (error) {
-      // Handle error
-      console.error('Failed to delete note', error);
+      console.error("Failed to delete note", error);
     }
   };
 
@@ -84,73 +84,81 @@ const App = () => {
     try {
       const archiveNoteResponse = await archiveNote(noteId);
       if (!archiveNoteResponse.error) {
-        fetchNotes(); // Re-fetch notes after archiving a note
+        fetchNotes();
       } else {
-        console.error('Failed to archive note');
+        console.error("Failed to archive note");
       }
     } catch (error) {
-      console.error('Failed to archive note', error);
+      console.error("Failed to archive note", error);
     }
   };
-  
 
   const handleUnarchive = async (noteId) => {
     try {
       const unarchiveNoteResponse = await unarchiveNote(noteId);
       if (!unarchiveNoteResponse.error) {
-        fetchNotes(); // Re-fetch notes after unarchiving a note
+        fetchNotes();
       } else {
-        console.error('Failed to unarchive note');
+        console.error("Failed to unarchive note");
       }
     } catch (error) {
-      console.error('Failed to unarchive note', error);
+      console.error("Failed to unarchive note", error);
     }
   };
 
   return (
     <div>
-        {isLoading && <div className="loading-indicator">Loading...</div>}
+      {isLoading && <div className="loading-indicator">Loading...</div>}
       <AuthProvider>
         <LanguageProvider>
           <ThemeProvider>
-              <Routes>
-                <Route path="/login" element={<Login onLogin={login} />} />
-                <Route path="/register" element={<Register onRegister={login} />} />
-                <Route
-                  path="/"
-                  element={
-                    <Home
-                      notes={allNotes}
-                      setAllNotes={setAllNotes}
-                      archivedNotes={archivedNotes}
-                      onDelete={handleDeleteNote}
-                      onArchive={handleArchive}
-                      showModal={showModal}
-                      setShowModal={setShowModal}
-                      modalContent={modalContent}
-                      setModalContent={setModalContent}
-                    />
-                  }
-                />
-                <Route
-                  path="/archive"
-                  element={
-                    <Archive
-                      notes={archivedNotes}
-                      setArchivedNotes={setArchivedNotes}
-                      onUnarchive={handleUnarchive}
-                      onDelete={handleDeleteNote}
-                      showModal={showModal}
-                      setShowModal={setShowModal}
-                      modalContent={modalContent}
-                      setModalContent={setModalContent}
-                    />
-                  }
-                />
-                <Route path="/addnote" element={<AddNoteForm onAddNote={handleAddNote} />} />
-                <Route path="/note/:id" element={<NoteDetail notes={allNotes} />} />
-                <Route path="*" element={<NotFound />} />
-              </Routes>
+            <Routes>
+              <Route path="/login" element={<Login onLogin={login} />} />
+              <Route
+                path="/register"
+                element={<Register onRegister={login} />}
+              />
+              <Route
+                path="/"
+                element={
+                  <Home
+                    notes={allNotes}
+                    setAllNotes={setAllNotes}
+                    archivedNotes={archivedNotes}
+                    onDelete={handleDeleteNote}
+                    onArchive={handleArchive}
+                    showModal={showModal}
+                    setShowModal={setShowModal}
+                    modalContent={modalContent}
+                    setModalContent={setModalContent}
+                  />
+                }
+              />
+              <Route
+                path="/archive"
+                element={
+                  <Archive
+                    notes={archivedNotes}
+                    setArchivedNotes={setArchivedNotes}
+                    onUnarchive={handleUnarchive}
+                    onDelete={handleDeleteNote}
+                    showModal={showModal}
+                    setShowModal={setShowModal}
+                    modalContent={modalContent}
+                    setModalContent={setModalContent}
+                  />
+                }
+              />
+              <Route
+                path="/addnote"
+                element={<AddNoteForm onAddNote={handleAddNote} />}
+              />
+              <Route
+                path="/note/:id"
+                element={<NoteDetail notes={allNotes} />}
+              />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
           </ThemeProvider>
         </LanguageProvider>
       </AuthProvider>
