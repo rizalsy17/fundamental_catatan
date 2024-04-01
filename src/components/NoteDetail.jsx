@@ -11,12 +11,13 @@ import { getNote } from "../utils/network-data";
 import { useLanguage } from "../context/LanguageContext";
 import { useTheme } from "../context/ThemeContext";
 import { useAuth } from "../context/AuthContext";
-import PropTypes from "prop-types";
+import { getUserLogged } from "../utils/network-data";
 
 const NoteDetail = () => {
   const { user, logoutUser } = useAuth();
   const { toggleTheme, theme } = useTheme();
   const { toggleLanguage, language } = useLanguage();
+  const [name, setName] = useState("");
   const navigate = useNavigate();
   const { id } = useParams();
   const [note, setNote] = useState(null);
@@ -29,6 +30,23 @@ const NoteDetail = () => {
     document.body.style.backgroundColor =
       theme === "light" ? "#ffffff" : "#222222";
   }, [theme]);
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const { error, data } = await getUserLogged();
+        if (!error) {
+          setName(data.name);
+        } else {
+          console.error("Failed to fetch user data");
+        }
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      }
+    };
+  
+    fetchUserData();
+  }, []);
 
   const fetchNoteDetail = async () => {
     try {
@@ -67,6 +85,7 @@ const NoteDetail = () => {
         </div>
         <div className="logout-icon" onClick={handleLogout}>
           <FontAwesomeIcon icon={faSignOutAlt} />
+          {name && <span style={{ marginLeft: '5px' }}>{name}</span>}
         </div>
       </div>
       <div className="center-container">
@@ -91,17 +110,6 @@ const NoteDetail = () => {
       </div>
     </div>
   );
-};
-
-NoteDetail.propTypes = {
-  notes: PropTypes.arrayOf(
-    PropTypes.shape({
-      id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
-      title: PropTypes.string.isRequired,
-      createdAt: PropTypes.string.isRequired,
-      body: PropTypes.string.isRequired,
-    })
-  ).isRequired,
 };
 
 export default NoteDetail;

@@ -11,6 +11,7 @@ import { faHome } from "@fortawesome/free-solid-svg-icons";
 import { useLanguage } from "../context/LanguageContext";
 import { useTheme } from "../context/ThemeContext";
 import { useAuth } from "../context/AuthContext";
+import { getUserLogged } from "../utils/network-data";
 
 const AddNoteForm = ({ onAddNote }) => {
   const { user, logoutUser } = useAuth();
@@ -18,6 +19,8 @@ const AddNoteForm = ({ onAddNote }) => {
   const { toggleLanguage, language } = useLanguage();
   const navigate = useNavigate();
   const [newNote, setNewNote] = useState({ title: "", body: "" });
+  const [name, setName] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const [charCount, setCharCount] = useState(0);
 
   useEffect(() => {
@@ -32,6 +35,24 @@ const AddNoteForm = ({ onAddNote }) => {
       navigate("/login"); // Gunakan navigate untuk mengarahkan ke halaman login
     }
   }, [user, navigate]);
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const { error, data } = await getUserLogged();
+        if (!error) {
+          setName(data.name);
+        } else {
+          console.error("Failed to fetch user data");
+        }
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      }
+    };
+  
+    fetchUserData();
+  }, []);
+  
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -51,6 +72,7 @@ const AddNoteForm = ({ onAddNote }) => {
 
   const handleAddNote = async () => {
     try {
+      setIsLoading(true); // Atur isLoading ke true saat memulai pengambilan data
       if (!newNote.body.trim()) {
         alert("Isi catatan tidak boleh kosong!");
         return;
@@ -60,8 +82,11 @@ const AddNoteForm = ({ onAddNote }) => {
       navigate("/");
     } catch (error) {
       alert("Gagal menambah catatan");
+    } finally {
+      setIsLoading(false); // Atur isLoading kembali ke false setelah selesai
     }
   };
+  
 
   const handleLogout = () => {
     logoutUser();
@@ -70,6 +95,7 @@ const AddNoteForm = ({ onAddNote }) => {
 
   return (
     <div className="container">
+       {isLoading && <div className="loading-indicator">Loading...</div>}
       <div className="icon-row">
         <div className="theme-icon" onClick={toggleTheme}>
           <FontAwesomeIcon icon={faAdjust} />
@@ -79,6 +105,7 @@ const AddNoteForm = ({ onAddNote }) => {
         </div>
         <div className="logout-icon" onClick={handleLogout}>
           <FontAwesomeIcon icon={faSignOutAlt} />
+          {name && <span style={{ marginLeft: '5px' }}>{name}</span>}
         </div>
       </div>
 

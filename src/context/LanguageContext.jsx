@@ -1,7 +1,8 @@
-// context/LanguageContext.js
 import React, { createContext, useState, useEffect, useContext } from "react";
+import PropTypes from "prop-types"; // Import PropTypes
 
 const LanguageContext = createContext();
+
 export const useLanguage = () => useContext(LanguageContext);
 
 export const LanguageProvider = ({ children }) => {
@@ -23,4 +24,8 @@ export const LanguageProvider = ({ children }) => {
       {children}
     </LanguageContext.Provider>
   );
+};
+
+LanguageProvider.propTypes = {
+  children: PropTypes.node.isRequired,
 };

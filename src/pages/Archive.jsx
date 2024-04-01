@@ -16,6 +16,7 @@ import {
   unarchiveNote,
   deleteNote,
   getArchivedNotes,
+  getUserLogged
 } from "../utils/network-data";
 import { useTheme } from "../context/ThemeContext";
 import { useLanguage } from "../context/LanguageContext";
@@ -29,6 +30,7 @@ const Archive = () => {
   const [modalContent, setModalContent] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [archivedNotes, setArchivedNotes] = useState([]);
+  const [name, setName] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
 
@@ -72,6 +74,24 @@ const Archive = () => {
 
     fetchArchivedNotes();
   }, []);
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const { error, data } = await getUserLogged();
+        if (!error) {
+          setName(data.name);
+        } else {
+          console.error("Failed to fetch user data");
+        }
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      }
+    };
+  
+    fetchUserData();
+  }, []);
+  
 
   const handleUnarchive = async (noteId) => {
     try {
@@ -132,6 +152,7 @@ const Archive = () => {
         </div>
         <div className="logout-icon" onClick={handleLogout}>
           <FontAwesomeIcon icon={faSignOutAlt} />
+          {name && <span style={{ marginLeft: '5px' }}>{name}</span>}
         </div>
       </div>
       <header>

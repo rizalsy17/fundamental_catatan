@@ -5,7 +5,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faAdjust, faLanguage } from "@fortawesome/free-solid-svg-icons";
 import { useTheme } from "../context/ThemeContext";
 import { useLanguage } from "../context/LanguageContext";
-import PropTypes from "prop-types";
 import useInput from "../hooks/useInput";
 
 function Login() {
@@ -13,7 +12,6 @@ function Login() {
   const { toggleTheme, theme } = useTheme();
   const { toggleLanguage, language } = useLanguage();
 
-  // Menggunakan custom hook useInput untuk email dan password
   const [email, setEmail] = useInput("");
   const [password, setPassword] = useInput("");
 
@@ -96,9 +94,5 @@ function Login() {
     </div>
   );
 }
-
-Login.propTypes = {
-  onLogin: PropTypes.func,
-};
 
 export default Login;

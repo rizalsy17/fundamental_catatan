@@ -1,4 +1,5 @@
 import React from "react";
+import PropTypes from "prop-types";
 
 const Modal = ({ content, onDeleteNote, onClose, onArchive, onUnarchive }) => {
   const handleConfirm = () => {
@@ -81,19 +82,21 @@ const Modal = ({ content, onDeleteNote, onClose, onArchive, onUnarchive }) => {
     </div>
   );
 };
-// Modal.propTypes = {
-//   content: PropTypes.shape({
-//     type: PropTypes.oneOf(['delete', 'confirm', 'activate', 'detail']).isRequired,
-//     message: PropTypes.string,
-//     noteId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-//     noteTitle: PropTypes.string,
-//     noteContent: PropTypes.string,
-//     archived: PropTypes.bool,
-//     createdAt: PropTypes.string,
-//   }).isRequired,
-//   onDeleteNote: PropTypes.func,
-//   onClose: PropTypes.func.isRequired,
-//   onArchive: PropTypes.func,
-//   onUnarchive: PropTypes.func,
-// };
+
+Modal.propTypes = {
+  content: PropTypes.shape({
+    type: PropTypes.oneOf(['delete', 'confirm', 'activate', 'detail']).isRequired,
+    message: PropTypes.string,
+    noteId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    noteTitle: PropTypes.string,
+    noteContent: PropTypes.string,
+    archived: PropTypes.bool,
+    createdAt: PropTypes.string,
+  }).isRequired,
+  onDeleteNote: PropTypes.func,
+  onClose: PropTypes.func.isRequired,
+  onArchive: PropTypes.func,
+  onUnarchive: PropTypes.func,
+};
+
 export default Modal;

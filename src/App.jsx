@@ -108,7 +108,6 @@ const App = () => {
 
   return (
     <div>
-      {isLoading && <div className="loading-indicator">Loading...</div>}
       <AuthProvider>
         <LanguageProvider>
           <ThemeProvider>

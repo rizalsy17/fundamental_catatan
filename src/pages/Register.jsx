@@ -6,7 +6,6 @@ import { faAdjust, faLanguage } from "@fortawesome/free-solid-svg-icons";
 import { useTheme } from "../context/ThemeContext";
 import { useLanguage } from "../context/LanguageContext";
 import { register } from "../utils/network-data";
-import PropTypes from "prop-types";
 
 function Register() {
   const { loginUser } = useAuth();
@@ -141,9 +140,5 @@ function Register() {
     </div>
   );
 }
-
-Register.propTypes = {
-  onRegister: PropTypes.func,
-};
 
 export default Register;

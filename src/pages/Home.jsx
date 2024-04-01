@@ -13,7 +13,7 @@ import Modal from "../components/Modal";
 import noNotesImage from "../../public/empty.png";
 import "../styles/style.css";
 import { showFormattedDate } from "../utils/index";
-import { archiveNote, deleteNote, getActiveNotes } from "../utils/network-data";
+import { archiveNote, deleteNote, getActiveNotes, getUserLogged } from "../utils/network-data";
 import { useAuth } from "../context/AuthContext";
 import { useTheme } from "../context/ThemeContext";
 import { useLanguage } from "../context/LanguageContext";
@@ -25,6 +25,7 @@ const Home = ({ notes, setAllNotes }) => {
   const { toggleLanguage, language } = useLanguage();
   const [searchTerm, setSearchTerm] = useState("");
   const [showModal, setShowModal] = useState(false);
+  const [name, setName] = useState("");
   const [modalContent, setModalContent] = useState(null);
   const [filteredNotes, setFilteredNotes] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -67,6 +68,24 @@ const Home = ({ notes, setAllNotes }) => {
 
     fetchActiveNotes();
   }, [setAllNotes]);
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const { error, data } = await getUserLogged();
+        if (!error) {
+          setName(data.name);
+        } else {
+          console.error("Failed to fetch user data");
+        }
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      }
+    };
+  
+    fetchUserData();
+  }, []);
+  
 
   const handleSearchChange = (e) => {
     setSearchTerm(e.target.value);
@@ -135,6 +154,7 @@ const Home = ({ notes, setAllNotes }) => {
         </div>
         <div className="logout-icon" onClick={handleLogout}>
           <FontAwesomeIcon icon={faSignOutAlt} />
+          {name && <span style={{ marginLeft: '5px' }}>{name}</span>}
         </div>
       </div>
       <header>
